@@ -12,6 +12,10 @@ const Schema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    group: {
+      type: String,
+      default: "gp",
+    },
   },
   {
     timestamps: true,
