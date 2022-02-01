@@ -71,31 +71,20 @@ router.patch("/task/update/:id", async (req, res) => {
   }
 });
 
-/*
-router.patch("/task/update/group", async (req, res) => {
-
-  const id = req.params.id;
-  const updates = req.body;
-  const up = Object.keys(updates);
-  const allow = ["task", "status"];
-  const isValid = up.every((update) => {
-    return allow.includes(update);
-  });
-  if (!isValid) return res.status(400).send({ error: "Invalid updates!" });
-
+router.patch("/task/update/group/:group", async (req, res) => {
+  const group = req.params.group;
   try {
-    const task = await Task.findById(id);
-    if (!task) return res.status(404).send();
+    const tasks = await Task.find({ group });
+    if (!tasks) res.status(404).send();
 
-    up.forEach((x) => (task[x] = updates[x]));
-    await task.save();
-    res.send(task);
+    tasks.forEach((task) => (task.status = true));
+    tasks.save();
+    res.send(tasks);
   } catch (e) {
     console.log(e);
     res.status(400).send();
   }
 });
-*/
 
 router.delete("/task/delete/all", async (req, res) => {
   try {
@@ -106,6 +95,18 @@ router.delete("/task/delete/all", async (req, res) => {
     res.status(400).send();
   }
 });
+
+router.delete("/task/delete/group/:group", async (req, res) => {
+  const group = req.params.group;
+  try {
+    const tasks = await Task.deleteMany({ group });
+    res.send(tasks);
+  } catch (e) {
+    console.log(e);
+    res.status(400).send();
+  }
+});
+
 router.delete("/task/delete/:id", async (req, res) => {
   const id = req.params.id;
   try {
