@@ -16,6 +16,7 @@ router.post("/task/create", async (req, res) => {
 router.get("/task/all", async (req, res) => {
   try {
     const tasks = await Task.find();
+    if (!tasks) res.status(404).send();
     res.send(tasks);
   } catch (e) {
     console.log(e);
@@ -74,11 +75,8 @@ router.patch("/task/update/:id", async (req, res) => {
 router.patch("/task/update/group/:group", async (req, res) => {
   const group = req.params.group;
   try {
-    const tasks = await Task.find({ group });
+    const tasks = await Task.updateMany({ group }, { $set: { status: true } });
     if (!tasks) res.status(404).send();
-
-    tasks.forEach((task) => (task.status = true));
-    tasks.save();
     res.send(tasks);
   } catch (e) {
     console.log(e);
@@ -89,6 +87,7 @@ router.patch("/task/update/group/:group", async (req, res) => {
 router.delete("/task/delete/all", async (req, res) => {
   try {
     const tasks = await Task.deleteMany();
+    if (!tasks) res.status(404).send();
     res.send(tasks);
   } catch (e) {
     console.log(e);
@@ -100,6 +99,7 @@ router.delete("/task/delete/group/:group", async (req, res) => {
   const group = req.params.group;
   try {
     const tasks = await Task.deleteMany({ group });
+    if (tasks.deletedCount === 0) res.status(404).send();
     res.send(tasks);
   } catch (e) {
     console.log(e);
